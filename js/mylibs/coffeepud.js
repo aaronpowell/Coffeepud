@@ -1,7 +1,5 @@
-﻿script = 
-    act: 0
-    line: 0
-    acts: [
+﻿script =
+    [
         [
             "Hello world",
             "This is another line"
@@ -10,36 +8,29 @@
             "We're starting a new story",
             "What do you want to talk about?"
         ]
-    ]
+    ].reverse()
 txt = $ 'textarea'
-running = false
-showScriptStep = () ->
-    return if script.act >= script.acts.length
-        
-    txt.val '' if script.line == 0
+act = script.pop()
+line = act.reverse().pop().split ''
+char = 0;
+type = () ->
+    if char >= line.length
+        return
+            
+    txt.val txt.val() + line[char] if char < line.length
     
-    act = script.acts[script.act]
-    line = act[script.line].split ''
-    line.reverse()
-    running = true
-    setTimeout go = () ->
-        l = line.pop()
-        if !l
-            running = false
-            l = '\r\n'
-        
-        txt.val txt.val() + l
-        
-        if running
-            setTimeout -> 
-                go()
-            , 50
-    , 50
-    
-    script.line++
-    if script.line >= act.length
-        script.act++
-        script.line = 0
+    char++
+showNext = () ->
+    txt.val txt.val() + '\r\n' if act && act.length
+    if act.length == 0
+        act = script.pop()
+        if !act
+            showNext = () -> 
+                return
+            return
+        txt.val ''
+    line = act.reverse().pop().split ''
+    char = 0
 
 $ ->
     txt.keypress (e) -> 
@@ -47,9 +38,11 @@ $ ->
 
         switch e.keyCode
             when 13 
-                showScriptStep() if !running
+                showNext()
             else
+                type()
         return false
+        
     $(window).resize -> 
         w = $ this
         txt.height w.height() - 35
