@@ -5,7 +5,7 @@
             "This is another line"
         ],
         [
-            "We're starting a new story",
+            "We're starting a new^^^old story",
             "What do you want to talk about?"
         ]
     ].reverse()
@@ -16,8 +16,13 @@ char = 0;
 type = () ->
     if char >= line.length
         return
-            
-    txt.val txt.val() + line[char] if char < line.length
+    
+    c = line[char]
+    
+    if c == '^'
+        txt.val txt.val().substring(0, txt.val().length - 1)
+    else
+        txt.val txt.val() + c if char < line.length
     
     char++
 showNext = () ->
